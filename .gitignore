@@ -1,5 +1,7 @@
 # 排除文档目录
 docs/
+# 但保留用户手册
+!docs/user-guide.md
 
 # IDE
 .idea/
