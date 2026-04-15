@@ -276,14 +276,7 @@ public class CustomModelAdapter implements ModelAdapter {
 
 | 文档 | 说明 |
 |------|------|
-| [市场分析报告](docs/market-analysis.md) | 市场调研和商业可行性分析 |
-| [产品需求文档](docs/prd.md) | MVP版本产品需求规格说明书 |
-| [架构设计文档](docs/architecture.md) | 系统架构和技术方案设计 |
-| [代码审查报告](docs/code-review-report-v2.md) | v2.0代码审查报告 |
-| [测试报告](docs/test-report.md) | 测试用例和测试报告 |
-| [资金预算](docs/budget.md) | 开发资金预算与使用计划 |
 | [用户手册](docs/user-guide.md) | 用户使用指南 |
-| [开发手册](docs/developer-guide.md) | 开发者指南 |
 
 ---
 
