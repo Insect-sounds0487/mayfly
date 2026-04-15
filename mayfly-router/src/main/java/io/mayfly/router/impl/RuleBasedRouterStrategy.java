@@ -5,7 +5,7 @@ import io.mayfly.core.ModelUnavailableException;
 import io.mayfly.router.RouterRule;
 import io.mayfly.router.RouterStrategy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.prompt.ChatRequest;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -34,7 +34,7 @@ public class RuleBasedRouterStrategy implements RouterStrategy {
     }
     
     @Override
-    public ModelInstance select(ChatRequest request, List<ModelInstance> candidates) {
+    public ModelInstance select(Prompt request, List<ModelInstance> candidates) {
         List<RouterRule> sortedRules = rules.stream()
             .sorted(Comparator.comparingInt(RouterRule::getPriority))
             .collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class RuleBasedRouterStrategy implements RouterStrategy {
         throw new ModelUnavailableException("No matching rule found");
     }
     
-    private boolean matches(RouterRule rule, ChatRequest request) {
+    private boolean matches(RouterRule rule, Prompt request) {
         try {
             EvaluationContext context = new StandardEvaluationContext();
             context.setVariable("request", request);
@@ -69,5 +69,10 @@ public class RuleBasedRouterStrategy implements RouterStrategy {
     @Override
     public String getName() {
         return "rule-based";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 50;
     }
 }

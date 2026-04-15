@@ -20,8 +20,8 @@
         <module>mayfly-loadbalancer</module>
         <module>mayfly-failover</module>
         <module>mayfly-circuitbreaker</module>
-        <module>mayfly-adapter</module>
         <module>mayfly-monitor</module>
+        <module>mayfly-adapter</module>
         <module>mayfly-spring-boot-starter</module>
     </modules>
     

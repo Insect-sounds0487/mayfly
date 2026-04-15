@@ -1,13 +1,14 @@
-package io.mayfly.core;
+package io.mayfly.autoconfigure;
 
 import io.mayfly.circuitbreaker.CircuitBreakerManager;
+import io.mayfly.core.*;
 import io.mayfly.failover.FailoverHandler;
 import io.mayfly.failover.FailoverResult;
 import io.mayfly.monitor.MetricsCollector;
 import io.mayfly.router.RouterStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.ChatRequest;
+import org.springframework.ai.chat.prompt.Prompt;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class DefaultModelRouter implements ModelRouter {
     }
     
     @Override
-    public ChatResponse chat(ChatRequest request) {
+    public ChatResponse chat(Prompt request) {
         long startTime = System.currentTimeMillis();
         List<ModelInstance> candidates = modelRegistry.getAllAvailableModels();
         
@@ -95,7 +96,7 @@ public class DefaultModelRouter implements ModelRouter {
     }
     
     @Override
-    public Flux<ChatResponse> stream(ChatRequest request) {
+    public Flux<ChatResponse> stream(Prompt request) {
         List<ModelInstance> candidates = modelRegistry.getAllAvailableModels();
         
         if (candidates.isEmpty()) {
@@ -114,11 +115,11 @@ public class DefaultModelRouter implements ModelRouter {
     }
     
     @Override
-    public CompletableFuture<ChatResponse> async(ChatRequest request) {
+    public CompletableFuture<ChatResponse> async(Prompt request) {
         return CompletableFuture.supplyAsync(() -> chat(request));
     }
     
-    private ChatResponse chatWithModel(ChatRequest request, ModelInstance model) {
+    private ChatResponse chatWithModel(Prompt request, ModelInstance model) {
         model.getActiveRequests().incrementAndGet();
         try {
             return circuitBreakerManager.executeProtected(

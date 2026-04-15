@@ -1,22 +1,15 @@
 package io.mayfly.autoconfigure;
 
-import io.mayfly.adapter.ModelAdapter;
-import io.mayfly.circuitbreaker.CircuitBreakerConfigProperties;
 import io.mayfly.circuitbreaker.CircuitBreakerManager;
-import io.mayfly.core.DefaultModelRegistry;
-import io.mayfly.core.DefaultModelRouter;
 import io.mayfly.core.ModelRegistry;
 import io.mayfly.core.ModelRouter;
 import io.mayfly.failover.FailoverHandler;
-import io.mayfly.loadbalancer.LoadBalancer;
-import io.mayfly.loadbalancer.impl.RoundRobinLoadBalancer;
-import io.mayfly.loadbalancer.impl.WeightedRoundRobinLoadBalancer;
 import io.mayfly.monitor.MetricsCollector;
+import io.mayfly.monitor.NoOpMetricsCollector;
 import io.mayfly.router.RouterStrategy;
 import io.mayfly.router.impl.FixedRouterStrategy;
 import io.mayfly.router.impl.RuleBasedRouterStrategy;
 import io.mayfly.router.impl.WeightedRouterStrategy;
-import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,136 +20,109 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * Mayfly自动配置类
+ * Mayfly 自动配置类
  */
 @Configuration
-@EnableConfigurationProperties(MayflyProperties.class)
 @ConditionalOnProperty(prefix = "mayfly", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(MayflyProperties.class)
 public class MayflyAutoConfiguration {
+    
+    private final MayflyProperties properties;
+    
+    public MayflyAutoConfiguration(MayflyProperties properties) {
+        this.properties = properties;
+    }
     
     @Bean
     @ConditionalOnMissingBean
+    public CircuitBreakerManager circuitBreakerManager() {
+        return new CircuitBreakerManager();
+    }
+    
+    @Bean
+    @ConditionalOnMissingBean
+    public FailoverHandler failoverHandler() {
+        return new FailoverHandler();
+    }
+    
+    @Bean
+    @ConditionalOnMissingBean
+    public MetricsCollector metricsCollector() {
+        if (properties.getMonitor() != null && properties.getMonitor().isEnabled()) {
+            return new NoOpMetricsCollector();
+        }
+        return new NoOpMetricsCollector();
+    }
+    
+    @Bean
+    @ConditionalOnMissingBean(name = "fixedRouterStrategy")
     public FixedRouterStrategy fixedRouterStrategy() {
         return new FixedRouterStrategy();
     }
     
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "weightedRouterStrategy")
     public WeightedRouterStrategy weightedRouterStrategy() {
         return new WeightedRouterStrategy();
     }
     
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "ruleBasedRouterStrategy")
     public RuleBasedRouterStrategy ruleBasedRouterStrategy() {
-        return new RuleBasedRouterStrategy();
+        RuleBasedRouterStrategy strategy = new RuleBasedRouterStrategy();
+        if (properties.getRouter() != null && properties.getRouter().getRules() != null) {
+            strategy.setRules(properties.getRouter().getRules());
+        }
+        return strategy;
     }
     
     @Bean
     @ConditionalOnMissingBean
-    public RoundRobinLoadBalancer roundRobinLoadBalancer() {
-        return new RoundRobinLoadBalancer();
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean
-    public WeightedRoundRobinLoadBalancer weightedRoundRobinLoadBalancer() {
-        return new WeightedRoundRobinLoadBalancer();
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean
-    public ModelRegistry modelRegistry(MayflyProperties properties,
-                                       ObjectProvider<List<ModelAdapter>> adapters) {
-        return new DefaultModelRegistry(properties, adapters.getIfAvailable());
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean
-    public RouterStrategy routerStrategy(MayflyProperties properties,
-                                         FixedRouterStrategy fixedRouterStrategy,
-                                         WeightedRouterStrategy weightedRouterStrategy,
-                                         RuleBasedRouterStrategy ruleBasedRouterStrategy) {
-        String strategyName = properties.getRouter().getStrategy();
+    public RouterStrategy routerStrategy(
+            ObjectProvider<FixedRouterStrategy> fixedProvider,
+            ObjectProvider<WeightedRouterStrategy> weightedProvider,
+            ObjectProvider<RuleBasedRouterStrategy> ruleBasedProvider) {
         
-        if (properties.getRouter().getRules() != null && !properties.getRouter().getRules().isEmpty()) {
-            ruleBasedRouterStrategy.setRules(properties.getRouter().getRules());
-        }
+        String strategy = properties.getRouter() != null 
+            ? properties.getRouter().getStrategy() : "fixed";
         
-        switch (strategyName) {
-            case "fixed":
-                return fixedRouterStrategy;
-            case "weighted":
-                return weightedRouterStrategy;
-            case "rule-based":
-                return ruleBasedRouterStrategy;
-            default:
-                return fixedRouterStrategy;
-        }
+        return switch (strategy) {
+            case "weighted" -> weightedProvider.getIfAvailable();
+            case "rule-based" -> ruleBasedProvider.getIfAvailable();
+            default -> fixedProvider.getIfAvailable();
+        };
     }
     
     @Bean
     @ConditionalOnMissingBean
-    public LoadBalancer loadBalancer(MayflyProperties properties,
-                                     RoundRobinLoadBalancer roundRobinLoadBalancer,
-                                     WeightedRoundRobinLoadBalancer weightedRoundRobinLoadBalancer) {
-        String strategyName = properties.getLoadbalancer().getStrategy();
+    public ModelRegistry modelRegistry(
+            CircuitBreakerManager circuitBreakerManager,
+            FailoverHandler failoverHandler,
+            MetricsCollector metricsCollector,
+            RouterStrategy routerStrategy,
+            ObjectProvider<List<io.mayfly.adapter.ModelAdapter>> adaptersProvider) {
         
-        switch (strategyName) {
-            case "round-robin":
-                return roundRobinLoadBalancer;
-            case "weighted-round-robin":
-                return weightedRoundRobinLoadBalancer;
-            default:
-                return roundRobinLoadBalancer;
-        }
+        List<io.mayfly.adapter.ModelAdapter> adapters = 
+            adaptersProvider.getIfAvailable(() -> List.of());
+        
+        return new DefaultModelRegistry(properties, adapters);
     }
     
     @Bean
     @ConditionalOnMissingBean
-    public FailoverHandler failoverHandler(MayflyProperties properties) {
-        io.mayfly.failover.FailoverConfig config = io.mayfly.failover.FailoverConfig.builder()
-            .enabled(properties.getFailover().isEnabled())
-            .maxRetries(properties.getFailover().getMaxRetries())
-            .cooldownDuration(properties.getFailover().getCooldownDuration())
-            .retryableExceptions(properties.getFailover().getRetryableExceptions())
-            .build();
-        return new FailoverHandler(config);
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean
-    public CircuitBreakerManager circuitBreakerManager(MayflyProperties properties) {
-        CircuitBreakerConfigProperties config = CircuitBreakerConfigProperties.builder()
-            .failureRateThreshold(properties.getCircuitBreaker().getFailureRateThreshold())
-            .waitDurationInOpenState(properties.getCircuitBreaker().getWaitDurationInOpenState())
-            .slidingWindowSize(properties.getCircuitBreaker().getSlidingWindowSize())
-            .minimumNumberOfCalls(properties.getCircuitBreaker().getMinimumNumberOfCalls())
-            .limitRefreshPeriod(properties.getRateLimiter().getLimitRefreshPeriod())
-            .limitForPeriod(properties.getRateLimiter().getLimitForPeriod())
-            .timeoutDuration(properties.getRateLimiter().getTimeoutDuration())
-            .build();
-        return new CircuitBreakerManager(config);
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean
-    public ModelRouter modelRouter(ModelRegistry modelRegistry,
-                                   RouterStrategy routerStrategy,
-                                   FailoverHandler failoverHandler,
-                                   CircuitBreakerManager circuitBreakerManager,
-                                   ObjectProvider<MetricsCollector> metricsCollectorProvider) {
-        return new DefaultModelRouter(modelRegistry, routerStrategy, 
-            failoverHandler, circuitBreakerManager, metricsCollectorProvider.getIfAvailable());
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean
-    public MetricsCollector metricsCollector(ObjectProvider<MeterRegistry> meterRegistryProvider,
-                                             MayflyProperties properties) {
-        if (properties.getMonitor().isEnabled() && meterRegistryProvider.getIfAvailable() != null) {
-            return new MetricsCollector(meterRegistryProvider.getIfAvailable());
-        }
-        return null;
+    public ModelRouter modelRouter(
+            ModelRegistry modelRegistry,
+            RouterStrategy routerStrategy,
+            FailoverHandler failoverHandler,
+            CircuitBreakerManager circuitBreakerManager,
+            MetricsCollector metricsCollector) {
+        
+        return new DefaultModelRouter(
+            modelRegistry,
+            routerStrategy,
+            failoverHandler,
+            circuitBreakerManager,
+            metricsCollector
+        );
     }
 }

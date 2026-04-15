@@ -1,14 +1,12 @@
-package io.mayfly.core;
+package io.mayfly.autoconfigure;
 
+import io.mayfly.adapter.ModelAdapter;
+import io.mayfly.core.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.ChatRequest;
-import reactor.core.publisher.Flux;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**

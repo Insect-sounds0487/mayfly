@@ -3,11 +3,10 @@ package io.mayfly.router.impl;
 import io.mayfly.core.ModelInstance;
 import io.mayfly.core.ModelUnavailableException;
 import io.mayfly.router.RouterStrategy;
-import org.springframework.ai.chat.prompt.ChatRequest;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 固定路由策略
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 public class FixedRouterStrategy implements RouterStrategy {
     
     @Override
-    public ModelInstance select(ChatRequest request, List<ModelInstance> candidates) {
+    public ModelInstance select(Prompt request, List<ModelInstance> candidates) {
         return candidates.stream()
             .filter(ModelInstance::isAvailable)
             .findFirst()

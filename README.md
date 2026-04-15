@@ -276,7 +276,9 @@ public class CustomModelAdapter implements ModelAdapter {
 
 | 文档 | 说明 |
 |------|------|
-| [用户手册](docs/user-guide.md) | 用户使用指南 |
+| [用户手册](docs/user-guide.md) | 用户使用指南，快速上手 |
+
+> 📚 **更多技术文档**：完整的 API 参考、架构设计、部署指南等内部文档位于 `docs/` 目录，仅供内部参考。
 
 ---
 

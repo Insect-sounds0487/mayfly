@@ -3,7 +3,7 @@ package io.mayfly.router.impl;
 import io.mayfly.core.ModelInstance;
 import io.mayfly.core.ModelUnavailableException;
 import io.mayfly.router.RouterStrategy;
-import org.springframework.ai.chat.prompt.ChatRequest;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class WeightedRouterStrategy implements RouterStrategy {
     private final Random random = new Random();
     
     @Override
-    public ModelInstance select(ChatRequest request, List<ModelInstance> candidates) {
+    public ModelInstance select(Prompt request, List<ModelInstance> candidates) {
         List<ModelInstance> available = candidates.stream()
             .filter(ModelInstance::isAvailable)
             .collect(Collectors.toList());

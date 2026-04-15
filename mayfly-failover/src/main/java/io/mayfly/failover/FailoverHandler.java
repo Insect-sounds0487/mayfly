@@ -2,15 +2,11 @@ package io.mayfly.failover;
 
 import io.mayfly.core.HealthStatus;
 import io.mayfly.core.ModelInstance;
-import lombok.Builder;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.prompt.ChatRequest;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +31,7 @@ public class FailoverHandler {
      * 执行故障转移
      */
     public FailoverResult executeFailover(
-            ChatRequest request,
+            Prompt request,
             ModelInstance failedModel,
             List<ModelInstance> candidates,
             Exception exception) {
