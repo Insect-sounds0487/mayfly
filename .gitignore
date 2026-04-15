@@ -3,6 +3,9 @@ docs/
 # 但保留用户手册
 !docs/user-guide.md
 
+# 本地文档备份（不提交）
+docs-backup/
+
 # IDE
 .idea/
 .vscode/
