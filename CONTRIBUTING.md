@@ -123,7 +123,7 @@ mvn clean install -DskipTests
 ## 🤝 联系方式
 
 - **Issues**: [提交问题](https://gitcode.com/Topfogking/mayfly/issues)
-- **邮箱**: dev@mayfly.io
+- **邮箱**: git@xsjyby.asia
 
 ---
 

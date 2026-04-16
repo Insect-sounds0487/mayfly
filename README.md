@@ -185,7 +185,7 @@ mayfly:
 
 ### 🐛 问题与讨论
 - **Issues**: [提交问题或功能请求](https://gitcode.com/Topfogking/mayfly/issues)
-- **邮箱**: dev@mayfly.io
+- **邮箱**: git@xsjyby.asia
 
 ---
 
