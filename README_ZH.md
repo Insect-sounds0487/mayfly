@@ -1,36 +1,36 @@
-# Mayfly - Enterprise Model Router Enhancement Plugin for Spring AI
+# Mayfly - 基于Spring AI的企业级模型路由增强插件
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2%2B-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Spring AI](https://img.shields.io/badge/Spring%20AI-1.0%2B-blue.svg)](https://spring.io/projects/spring-ai)
 
-> **Empower every Spring AI Java developer with enterprise-grade model routing capabilities at zero cost.**
+> **让每个使用Spring AI的Java开发者，都能零成本获得企业级模型路由能力。**
 
 ---
 
-## 📖 Introduction
+## 📖 简介
 
-Mayfly is an enterprise-grade model routing enhancement plugin based on Spring AI, providing out-of-the-box load balancing, failover, circuit breaking, and other enterprise capabilities for Chinese Java developers, with deep integration support for domestic models (ZhiPu, Tongyi, DeepSeek, etc.).
+Mayfly是一个基于Spring AI的企业级模型路由增强插件，为国内Java开发者提供开箱即用的负载均衡、故障转移、熔断限流等企业级能力，深度适配国产模型（智谱、通义、DeepSeek等）。
 
-### ✨ Core Features
+### ✨ 核心特性
 
-| Feature | Description |
-|---------|-------------|
-| 🔄 **Unified Multi-Model API** | Single interface to call different vendor models, hiding API differences |
-| 🎯 **Intelligent Routing** | Supports fixed, weighted, and rule-based (SpEL) routing strategies |
-| ⚖️ **Load Balancing** | Round-robin and weighted round-robin load balancing algorithms |
-| 🛡️ **Failover** | Automatic failover to backup models with cooldown mechanism |
-| 🔌 **Circuit Breaking** | Circuit breaker and rate limiter based on Resilience4j |
-| 📊 **Monitoring & Observability** | Complete monitoring metrics based on Micrometer |
-| 🇨🇳 **Domestic Model Integration** | Deep integration with ZhiPu, Tongyi Qwen, DeepSeek, and other domestic models |
-| 🚀 **Zero-Configuration Integration** | Spring Boot Starter auto-configuration, minimal setup in just 3 lines |
+| 特性 | 说明 |
+|------|------|
+| 🔄 **多模型统一调用** | 统一接口调用不同厂商模型，屏蔽API差异 |
+| 🎯 **智能路由** | 支持固定、权重、规则（SpEL）三种路由策略 |
+| ⚖️ **负载均衡** | 轮询、加权轮询等负载均衡算法 |
+| 🛡️ **故障转移** | 主模型故障自动切换备用模型，支持冷却机制 |
+| 🔌 **熔断限流** | 基于Resilience4j的熔断器和限流器 |
+| 📊 **监控可观测** | 基于Micrometer的完整监控指标 |
+| 🇨🇳 **国产模型适配** | 深度适配智谱、通义千问、DeepSeek等国产模型 |
+| 🚀 **零配置接入** | Spring Boot Starter自动配置，最小配置仅需3行 |
 
 ---
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-### 1. Add Dependency
+### 1. 添加依赖
 
 ```xml
 <dependency>
@@ -40,9 +40,9 @@ Mayfly is an enterprise-grade model routing enhancement plugin based on Spring A
 </dependency>
 ```
 
-### 2. Configure Models
+### 2. 配置模型
 
-Add configuration in `application.yml`:
+在`application.yml`中添加配置：
 
 ```yaml
 mayfly:
@@ -60,7 +60,7 @@ mayfly:
       weight: 30
 ```
 
-### 3. Use Routing
+### 3. 使用路由
 
 ```java
 @Service
@@ -79,17 +79,17 @@ public class ChatService {
 }
 ```
 
-That's it! Mayfly automatically handles routing, load balancing, failover, and all complex logic.
+就这么简单！Mayfly会自动处理路由、负载均衡、故障转移等所有复杂逻辑。
 
 ---
 
-## 📋 Complete Configuration
+## 📋 完整配置
 
 ```yaml
 mayfly:
   enabled: true
   
-  # Model Configuration
+  # 模型配置
   models:
     - name: zhipu-primary
       provider: zhipu
@@ -117,7 +117,7 @@ mayfly:
       tags:
         - code
   
-  # Routing Configuration
+  # 路由配置
   router:
     strategy: rule-based  # fixed, weighted, rule-based
     rules:
@@ -134,7 +134,7 @@ mayfly:
         target-model: zhipu-primary
         priority: 99
   
-  # Load Balancer Configuration
+  # 负载均衡配置
   loadbalancer:
     strategy: weighted-round-robin  # round-robin, weighted-round-robin
     health-check:
@@ -143,7 +143,7 @@ mayfly:
       timeout: 5s
       unhealthy-threshold: 3
   
-  # Failover Configuration
+  # 故障转移配置
   failover:
     enabled: true
     max-retries: 2
@@ -152,7 +152,7 @@ mayfly:
       - java.net.SocketTimeoutException
       - org.springframework.web.client.HttpServerErrorException
   
-  # Circuit Breaker Configuration
+  # 熔断器配置
   circuit-breaker:
     enabled: true
     failure-rate-threshold: 50
@@ -160,35 +160,40 @@ mayfly:
     sliding-window-size: 10
     minimum-number-of-calls: 5
   
-  # Rate Limiter Configuration
+  # 限流器配置
   rate-limiter:
     enabled: true
     limit-refresh-period: 1s
     limit-for-period: 100
     timeout-duration: 0s
   
-  # Monitoring Configuration
+  # 监控配置
   monitor:
     enabled: true
 ```
 
 ---
 
-## 🤝 Open Source Community
+## 🤝 开源社区
 
-We welcome all forms of contributions! Please check our [Contribution Guide](CONTRIBUTING.md) to learn how to participate in project development.
+我们欢迎所有形式的贡献！请查看我们的 [贡献指南](CONTRIBUTING.md) 了解如何参与项目开发。
 
-### 📄 Documentation
-- [Contribution Guide](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)  
-- [Changelog](CHANGELOG.md)
+### 📄 文档
+- [贡献指南](CONTRIBUTING.md)
+- [行为准则](CODE_OF_CONDUCT.md)  
+- [版本日志](CHANGELOG.md)
 
-### 🐛 Issues & Discussion
-- **Issues**: [Submit issues or feature requests](https://github.com/mayfly-ai/mayfly/issues)
-- **Email**: git@xsjyby.asia
+### 🐛 问题与讨论
+- **Issues**: [提交问题或功能请求](https://gitcode.com/Topfogking/mayfly/issues)
+- **邮箱**: git@xsjyby.asia
 
 ---
 
-## 📄 License
+## 🌍 多语言支持
 
-This project is licensed under the [Apache License 2.0](LICENSE).
+- 🇨🇳 [中文文档 (Chinese)](README.md)
+- 🇺🇸 [English Documentation](README_EN.md)
+
+## 📄 许可证
+
+本项目采用 [Apache License 2.0](LICENSE) 许可证。
