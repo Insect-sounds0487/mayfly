@@ -20,49 +20,49 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * DeepSeek 自定义适配器
- * DeepSeek 兼容 OpenAI API
+ * 通义千问 (DashScope) 自定义适配器
+ * 支持 Qwen-Max 系列模型
  */
 @Component
-public class DeepSeekModelAdapter implements ModelAdapter {
+public class TongyiModelAdapter implements ModelAdapter {
     
     @Override
     public ChatModel createChatModel(ModelConfig config) {
-        return new DeepSeekChatModel(config);
+        return new TongyiChatModel(config);
     }
     
     @Override
     public String getProvider() {
-        return "deepseek";
+        return "tongyi";
     }
     
     /**
-     * DeepSeek 聊天模型实现
+     * 通义千问聊天模型实现
      */
-    private static class DeepSeekChatModel extends BaseHttpClient implements ChatModel {
+    private static class TongyiChatModel extends BaseHttpClient implements ChatModel {
         
-        public DeepSeekChatModel(ModelConfig config) {
+        public TongyiChatModel(ModelConfig config) {
             super(
                 config.getApiKey(),
-                config.getBaseUrl() != null ? config.getBaseUrl() : "https://api.deepseek.com/v1",
-                config.getModel() != null ? config.getModel() : "deepseek-chat"
+                config.getBaseUrl() != null ? config.getBaseUrl() : "https://dashscope.aliyuncs.com/compatible-mode/v1",
+                config.getModel() != null ? config.getModel() : "qwen-max"
             );
         }
         
         @Override
         public ChatResponse call(Prompt prompt) {
             // 构建请求体
-            DeepSeekChatRequest request = buildRequest(prompt);
+            TongyiChatRequest request = buildRequest(prompt);
             
             // 发送请求
-            DeepSeekChatResponse response = restTemplate.postForObject(
+            TongyiChatResponse response = restTemplate.postForObject(
                 baseUrl + "/chat/completions",
                 createRequestEntity(request),
-                DeepSeekChatResponse.class
+                TongyiChatResponse.class
             );
             
-            Assert.notNull(response, "DeepSeek 响应为空");
-            Assert.notEmpty(response.getChoices(), "DeepSeek 响应中没有 choices");
+            Assert.notNull(response, "通义千问响应为空");
+            Assert.notEmpty(response.getChoices(), "通义千问响应中没有 choices");
             
             // 转换为 Spring AI 格式
             AssistantMessage assistantMessage = new AssistantMessage(
@@ -73,8 +73,8 @@ public class DeepSeekModelAdapter implements ModelAdapter {
             return new ChatResponse(List.of(generation));
         }
         
-        private DeepSeekChatRequest buildRequest(Prompt prompt) {
-            DeepSeekChatRequest request = new DeepSeekChatRequest();
+        private TongyiChatRequest buildRequest(Prompt prompt) {
+            TongyiChatRequest request = new TongyiChatRequest();
             request.setModel(model);
             request.setMessages(convertMessages(prompt.getInstructions()));
             request.setTemperature(0.7);
@@ -82,34 +82,34 @@ public class DeepSeekModelAdapter implements ModelAdapter {
             return request;
         }
         
-        private List<DeepSeekChatMessage> convertMessages(List<Message> messages) {
-            List<DeepSeekChatMessage> deepseekMessages = new ArrayList<>();
+        private List<TongyiChatMessage> convertMessages(List<Message> messages) {
+            List<TongyiChatMessage> tongyiMessages = new ArrayList<>();
             
             for (Message message : messages) {
-                DeepSeekChatMessage deepseekMessage = new DeepSeekChatMessage();
+                TongyiChatMessage tongyiMessage = new TongyiChatMessage();
                 
                 if (message instanceof UserMessage) {
-                    deepseekMessage.setRole("user");
-                    deepseekMessage.setContent(message.getText());
+                    tongyiMessage.setRole("user");
+                    tongyiMessage.setContent(message.getText());
                 } else if (message instanceof SystemMessage) {
-                    deepseekMessage.setRole("system");
-                    deepseekMessage.setContent(message.getText());
+                    tongyiMessage.setRole("system");
+                    tongyiMessage.setContent(message.getText());
                 } else if (message instanceof AssistantMessage) {
-                    deepseekMessage.setRole("assistant");
-                    deepseekMessage.setContent(message.getText());
+                    tongyiMessage.setRole("assistant");
+                    tongyiMessage.setContent(message.getText());
                 }
                 
-                deepseekMessages.add(deepseekMessage);
+                tongyiMessages.add(tongyiMessage);
             }
             
-            return deepseekMessages;
+            return tongyiMessages;
         }
     }
     
     /**
-     * DeepSeek 请求消息格式
+     * 通义千问请求消息格式
      */
-    private static class DeepSeekChatMessage {
+    private static class TongyiChatMessage {
         private String role;
         private String content;
         
@@ -120,19 +120,19 @@ public class DeepSeekModelAdapter implements ModelAdapter {
     }
     
     /**
-     * DeepSeek 聊天请求格式
+     * 通义千问聊天请求格式
      */
-    private static class DeepSeekChatRequest {
+    private static class TongyiChatRequest {
         private String model;
-        private List<DeepSeekChatMessage> messages;
+        private List<TongyiChatMessage> messages;
         private Double temperature;
         private Integer maxTokens;
         private Boolean stream;
         
         public String getModel() { return model; }
         public void setModel(String model) { this.model = model; }
-        public List<DeepSeekChatMessage> getMessages() { return messages; }
-        public void setMessages(List<DeepSeekChatMessage> messages) { this.messages = messages; }
+        public List<TongyiChatMessage> getMessages() { return messages; }
+        public void setMessages(List<TongyiChatMessage> messages) { this.messages = messages; }
         public Double getTemperature() { return temperature; }
         public void setTemperature(Double temperature) { this.temperature = temperature; }
         public Integer getMaxTokens() { return maxTokens; }
@@ -142,14 +142,14 @@ public class DeepSeekModelAdapter implements ModelAdapter {
     }
     
     /**
-     * DeepSeek 聊天响应格式
+     * 通义千问聊天响应格式
      */
-    private static class DeepSeekChatResponse {
+    private static class TongyiChatResponse {
         private String id;
         private Long created;
         private String model;
-        private List<DeepSeekChatChoice> choices;
-        private DeepSeekUsage usage;
+        private List<TongyiChatChoice> choices;
+        private TongyiUsage usage;
         
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
@@ -157,26 +157,26 @@ public class DeepSeekModelAdapter implements ModelAdapter {
         public void setCreated(Long created) { this.created = created; }
         public String getModel() { return model; }
         public void setModel(String model) { this.model = model; }
-        public List<DeepSeekChatChoice> getChoices() { return choices; }
-        public void setChoices(List<DeepSeekChatChoice> choices) { this.choices = choices; }
-        public DeepSeekUsage getUsage() { return usage; }
-        public void setUsage(DeepSeekUsage usage) { this.usage = usage; }
+        public List<TongyiChatChoice> getChoices() { return choices; }
+        public void setChoices(List<TongyiChatChoice> choices) { this.choices = choices; }
+        public TongyiUsage getUsage() { return usage; }
+        public void setUsage(TongyiUsage usage) { this.usage = usage; }
     }
     
-    private static class DeepSeekChatChoice {
+    private static class TongyiChatChoice {
         private Integer index;
-        private DeepSeekChatMessage message;
+        private TongyiChatMessage message;
         private String finishReason;
         
         public Integer getIndex() { return index; }
         public void setIndex(Integer index) { this.index = index; }
-        public DeepSeekChatMessage getMessage() { return message; }
-        public void setMessage(DeepSeekChatMessage message) { this.message = message; }
+        public TongyiChatMessage getMessage() { return message; }
+        public void setMessage(TongyiChatMessage message) { this.message = message; }
         public String getFinishReason() { return finishReason; }
         public void setFinishReason(String finishReason) { this.finishReason = finishReason; }
     }
     
-    private static class DeepSeekUsage {
+    private static class TongyiUsage {
         private Integer promptTokens;
         private Integer completionTokens;
         private Integer totalTokens;

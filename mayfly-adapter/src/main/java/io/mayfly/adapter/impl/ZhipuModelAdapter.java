@@ -16,53 +16,54 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 /**
- * DeepSeek 自定义适配器
- * DeepSeek 兼容 OpenAI API
+ * 智谱 AI (ZhiPuAI) 自定义适配器
+ * 支持 GLM-4 系列模型
  */
 @Component
-public class DeepSeekModelAdapter implements ModelAdapter {
+public class ZhipuModelAdapter implements ModelAdapter {
     
     @Override
     public ChatModel createChatModel(ModelConfig config) {
-        return new DeepSeekChatModel(config);
+        return new ZhipuChatModel(config);
     }
     
     @Override
     public String getProvider() {
-        return "deepseek";
+        return "zhipu";
     }
     
     /**
-     * DeepSeek 聊天模型实现
+     * 智谱 AI 聊天模型实现
      */
-    private static class DeepSeekChatModel extends BaseHttpClient implements ChatModel {
+    private static class ZhipuChatModel extends BaseHttpClient implements ChatModel {
         
-        public DeepSeekChatModel(ModelConfig config) {
+        public ZhipuChatModel(ModelConfig config) {
             super(
                 config.getApiKey(),
-                config.getBaseUrl() != null ? config.getBaseUrl() : "https://api.deepseek.com/v1",
-                config.getModel() != null ? config.getModel() : "deepseek-chat"
+                config.getBaseUrl() != null ? config.getBaseUrl() : "https://open.bigmodel.cn/api/paas/v4",
+                config.getModel() != null ? config.getModel() : "glm-4"
             );
         }
         
         @Override
         public ChatResponse call(Prompt prompt) {
             // 构建请求体
-            DeepSeekChatRequest request = buildRequest(prompt);
+            ZhipuChatRequest request = buildRequest(prompt);
             
             // 发送请求
-            DeepSeekChatResponse response = restTemplate.postForObject(
+            ZhipuChatResponse response = restTemplate.postForObject(
                 baseUrl + "/chat/completions",
                 createRequestEntity(request),
-                DeepSeekChatResponse.class
+                ZhipuChatResponse.class
             );
             
-            Assert.notNull(response, "DeepSeek 响应为空");
-            Assert.notEmpty(response.getChoices(), "DeepSeek 响应中没有 choices");
+            Assert.notNull(response, "智谱 AI 响应为空");
+            Assert.notEmpty(response.getChoices(), "智谱 AI 响应中没有 choices");
             
             // 转换为 Spring AI 格式
             AssistantMessage assistantMessage = new AssistantMessage(
@@ -73,8 +74,8 @@ public class DeepSeekModelAdapter implements ModelAdapter {
             return new ChatResponse(List.of(generation));
         }
         
-        private DeepSeekChatRequest buildRequest(Prompt prompt) {
-            DeepSeekChatRequest request = new DeepSeekChatRequest();
+        private ZhipuChatRequest buildRequest(Prompt prompt) {
+            ZhipuChatRequest request = new ZhipuChatRequest();
             request.setModel(model);
             request.setMessages(convertMessages(prompt.getInstructions()));
             request.setTemperature(0.7);
@@ -82,34 +83,34 @@ public class DeepSeekModelAdapter implements ModelAdapter {
             return request;
         }
         
-        private List<DeepSeekChatMessage> convertMessages(List<Message> messages) {
-            List<DeepSeekChatMessage> deepseekMessages = new ArrayList<>();
+        private List<ZhipuChatMessage> convertMessages(List<Message> messages) {
+            List<ZhipuChatMessage> zhipuMessages = new ArrayList<>();
             
             for (Message message : messages) {
-                DeepSeekChatMessage deepseekMessage = new DeepSeekChatMessage();
+                ZhipuChatMessage zhipuMessage = new ZhipuChatMessage();
                 
                 if (message instanceof UserMessage) {
-                    deepseekMessage.setRole("user");
-                    deepseekMessage.setContent(message.getText());
+                    zhipuMessage.setRole("user");
+                    zhipuMessage.setContent(message.getText());
                 } else if (message instanceof SystemMessage) {
-                    deepseekMessage.setRole("system");
-                    deepseekMessage.setContent(message.getText());
+                    zhipuMessage.setRole("system");
+                    zhipuMessage.setContent(message.getText());
                 } else if (message instanceof AssistantMessage) {
-                    deepseekMessage.setRole("assistant");
-                    deepseekMessage.setContent(message.getText());
+                    zhipuMessage.setRole("assistant");
+                    zhipuMessage.setContent(message.getText());
                 }
                 
-                deepseekMessages.add(deepseekMessage);
+                zhipuMessages.add(zhipuMessage);
             }
             
-            return deepseekMessages;
+            return zhipuMessages;
         }
     }
     
     /**
-     * DeepSeek 请求消息格式
+     * 智谱 AI 请求消息格式
      */
-    private static class DeepSeekChatMessage {
+    private static class ZhipuChatMessage {
         private String role;
         private String content;
         
@@ -120,19 +121,19 @@ public class DeepSeekModelAdapter implements ModelAdapter {
     }
     
     /**
-     * DeepSeek 聊天请求格式
+     * 智谱 AI 聊天请求格式
      */
-    private static class DeepSeekChatRequest {
+    private static class ZhipuChatRequest {
         private String model;
-        private List<DeepSeekChatMessage> messages;
+        private List<ZhipuChatMessage> messages;
         private Double temperature;
         private Integer maxTokens;
         private Boolean stream;
         
         public String getModel() { return model; }
         public void setModel(String model) { this.model = model; }
-        public List<DeepSeekChatMessage> getMessages() { return messages; }
-        public void setMessages(List<DeepSeekChatMessage> messages) { this.messages = messages; }
+        public List<ZhipuChatMessage> getMessages() { return messages; }
+        public void setMessages(List<ZhipuChatMessage> messages) { this.messages = messages; }
         public Double getTemperature() { return temperature; }
         public void setTemperature(Double temperature) { this.temperature = temperature; }
         public Integer getMaxTokens() { return maxTokens; }
@@ -142,14 +143,14 @@ public class DeepSeekModelAdapter implements ModelAdapter {
     }
     
     /**
-     * DeepSeek 聊天响应格式
+     * 智谱 AI 聊天响应格式
      */
-    private static class DeepSeekChatResponse {
+    private static class ZhipuChatResponse {
         private String id;
         private Long created;
         private String model;
-        private List<DeepSeekChatChoice> choices;
-        private DeepSeekUsage usage;
+        private List<ZhipuChatChoice> choices;
+        private ZhipuUsage usage;
         
         public String getId() { return id; }
         public void setId(String id) { this.id = id; }
@@ -157,26 +158,26 @@ public class DeepSeekModelAdapter implements ModelAdapter {
         public void setCreated(Long created) { this.created = created; }
         public String getModel() { return model; }
         public void setModel(String model) { this.model = model; }
-        public List<DeepSeekChatChoice> getChoices() { return choices; }
-        public void setChoices(List<DeepSeekChatChoice> choices) { this.choices = choices; }
-        public DeepSeekUsage getUsage() { return usage; }
-        public void setUsage(DeepSeekUsage usage) { this.usage = usage; }
+        public List<ZhipuChatChoice> getChoices() { return choices; }
+        public void setChoices(List<ZhipuChatChoice> choices) { this.choices = choices; }
+        public ZhipuUsage getUsage() { return usage; }
+        public void setUsage(ZhipuUsage usage) { this.usage = usage; }
     }
     
-    private static class DeepSeekChatChoice {
+    private static class ZhipuChatChoice {
         private Integer index;
-        private DeepSeekChatMessage message;
+        private ZhipuChatMessage message;
         private String finishReason;
         
         public Integer getIndex() { return index; }
         public void setIndex(Integer index) { this.index = index; }
-        public DeepSeekChatMessage getMessage() { return message; }
-        public void setMessage(DeepSeekChatMessage message) { this.message = message; }
+        public ZhipuChatMessage getMessage() { return message; }
+        public void setMessage(ZhipuChatMessage message) { this.message = message; }
         public String getFinishReason() { return finishReason; }
         public void setFinishReason(String finishReason) { this.finishReason = finishReason; }
     }
     
-    private static class DeepSeekUsage {
+    private static class ZhipuUsage {
         private Integer promptTokens;
         private Integer completionTokens;
         private Integer totalTokens;

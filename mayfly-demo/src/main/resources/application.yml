@@ -1,13 +1,14 @@
 mayfly:
   enabled: true
   
-  # 模型配置 - 添加多个模型用于测试
+  # 模型配置 - 国产模型深度适配
   models:
+    # DeepSeek 配置
     - name: deepseek-primary
       provider: deepseek
       api-key: ${DEEPSEEK_API_KEY:sk-5e0c0e0cc3f4495c96d9180b042622cf}
       model: deepseek-chat
-      weight: 70
+      weight: 40
       timeout: 30000
       max-retries: 2
       tags:
@@ -18,11 +19,35 @@ mayfly:
       provider: deepseek
       api-key: ${DEEPSEEK_API_KEY:sk-5e0c0e0cc3f4495c96d9180b042622cf}
       model: deepseek-chat
-      weight: 30
+      weight: 20
       timeout: 30000
       max-retries: 2
       tags:
         - backup
+        - chinese
+    
+    # 智谱 AI 配置
+    - name: zhipu-primary
+      provider: zhipu
+      api-key: ${ZHIPU_API_KEY:e11709bbd96e4a22a096a3b15615ab36.vr7f07ygiabasgEQ}
+      model: glm-4
+      weight: 25
+      timeout: 30000
+      max-retries: 2
+      tags:
+        - primary
+        - chinese
+    
+    # 通义千问配置
+    - name: tongyi-primary
+      provider: tongyi
+      api-key: ${TONGYI_API_KEY:sk-fe7e4e6a32194b62a84679e64bcbd7c5}
+      model: qwen-max
+      weight: 15
+      timeout: 30000
+      max-retries: 2
+      tags:
+        - primary
         - chinese
   
   # 路由配置
