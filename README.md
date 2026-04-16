@@ -73,8 +73,8 @@ public class ChatService {
     }
     
     public ChatResponse chat(String message) {
-        ChatRequest request = new ChatRequest(new Prompt(message));
-        return modelRouter.chat(request);
+        Prompt prompt = new Prompt(message);
+        return modelRouter.chat(prompt);
     }
 }
 ```
@@ -174,184 +174,21 @@ mayfly:
 
 ---
 
-## 🏗️ 架构设计
+## 🤝 开源社区
 
-```
-┌─────────────────────────────────────┐
-│         业务应用层                    │
-│      (User's Spring Boot App)        │
-├─────────────────────────────────────┤
-│      Mayfly 路由增强插件              │
-│  ┌─────────┬─────────┬──────────┐   │
-│  │ 负载均衡 │ 灰度发布 │ 熔断限流  │   │
-│  ├─────────┼─────────┼──────────┤   │
-│  │ 智能路由 │ 故障转移 │ 监控观测  │   │
-│  └─────────┴─────────┴──────────┘   │
-├─────────────────────────────────────┤
-│         Spring AI 官方框架            │
-├─────────────────────────────────────┤
-│    国产模型 + 海外模型 适配层          │
-└─────────────────────────────────────┘
-```
+我们欢迎所有形式的贡献！请查看我们的 [贡献指南](CONTRIBUTING.md) 了解如何参与项目开发。
 
----
+### 📄 文档
+- [贡献指南](CONTRIBUTING.md)
+- [行为准则](CODE_OF_CONDUCT.md)  
+- [版本日志](CHANGELOG.md)
 
-## 📦 模块说明
-
-| 模块 | 说明 |
-|------|------|
-| mayfly-core | 核心模块 - 模型路由核心接口和实体 |
-| mayfly-router | 路由策略模块 - 固定/权重/规则路由策略 |
-| mayfly-loadbalancer | 负载均衡模块 - 轮询/加权轮询 |
-| mayfly-failover | 故障转移模块 - 故障转移和冷却机制 |
-| mayfly-circuitbreaker | 熔断限流模块 - 基于Resilience4j |
-| mayfly-adapter | 模型适配器模块 - 智谱/通义/DeepSeek |
-| mayfly-monitor | 监控模块 - 基于Micrometer |
-| mayfly-spring-boot-starter | Spring Boot Starter - 自动配置 |
-
----
-
-## 📊 监控指标
-
-Mayfly内置以下Prometheus指标：
-
-| 指标名称 | 类型 | 说明 |
-|---------|------|------|
-| `mayfly.model.calls.total` | Counter | 模型调用总次数 |
-| `mayfly.model.calls.success` | Counter | 成功调用次数 |
-| `mayfly.model.calls.failure` | Counter | 失败调用次数 |
-| `mayfly.model.calls.failover` | Counter | 故障转移次数 |
-| `mayfly.model.latency.seconds` | Timer | 调用延迟 |
-| `mayfly.model.tokens.input` | DistributionSummary | 输入Token数 |
-| `mayfly.model.tokens.output` | DistributionSummary | 输出Token数 |
-
----
-
-## 🤝 扩展开发
-
-### 自定义路由策略
-
-```java
-@Component
-public class CustomRouterStrategy implements RouterStrategy {
-    
-    @Override
-    public ModelInstance select(ChatRequest request, List<ModelInstance> candidates) {
-        // 自定义路由逻辑
-        return candidates.stream()
-            .filter(ModelInstance::isAvailable)
-            .findFirst()
-            .orElseThrow(() -> new ModelUnavailableException("No available model"));
-    }
-    
-    @Override
-    public String getName() {
-        return "custom";
-    }
-}
-```
-
-### 自定义模型适配器
-
-```java
-@Component
-public class CustomModelAdapter implements ModelAdapter {
-    
-    @Override
-    public ChatModel createChatModel(ModelConfig config) {
-        // 创建自定义ChatModel
-        return new CustomChatModel(config);
-    }
-    
-    @Override
-    public String getProvider() {
-        return "custom";
-    }
-}
-```
-
----
-
-## 📄 文档
-
-| 文档 | 说明 |
-|------|------|
-| [用户手册](docs/user-guide.md) | 用户使用指南，快速上手 |
-
-> 📚 **更多技术文档**：完整的 API 参考、架构设计、部署指南等内部文档位于 `docs/` 目录，仅供内部参考。
-
----
-
-## 🛠️ 构建和运行
-
-### 环境要求
-
-- JDK 17+
-- Maven 3.8+
-- Spring Boot 3.2+
-
-### 本地构建
-
-```bash
-# 克隆项目
-git clone https://github.com/mayfly-ai/mayfly.git
-cd mayfly
-
-# 构建项目
-mvn clean install
-
-# 运行测试
-mvn test
-```
-
-### Docker运行
-
-```bash
-# 构建镜像
-docker build -t mayfly:latest .
-
-# 运行容器
-docker-compose up -d
-```
-
----
-
-## 📈 路线图
-
-| 版本 | 功能 | 状态 |
-|------|------|------|
-| v0.1.0-alpha | P0功能（核心路由、故障转移、自动配置） | ✅ 完成 |
-| v0.2.0-beta | P1功能（负载均衡、熔断限流、监控） | ✅ 完成 |
-| v1.0.0-RC | 完整MVP+文档 | 🚧 进行中 |
-| v1.0.0-GA | 正式发布 | 📋 计划中 |
-| v1.1.0 | 灰度发布、高级路由策略 | 📋 计划中 |
-| v2.0.0 | 管理后台、更多模型支持 | 📋 计划中 |
-
----
-
-## 🤝 贡献指南
-
-我们欢迎所有形式的贡献！
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 提交 Pull Request
+### 🐛 问题与讨论
+- **Issues**: [提交问题或功能请求](https://gitcode.com/Topfogking/mayfly/issues)
+- **邮箱**: dev@mayfly.io
 
 ---
 
 ## 📄 许可证
 
 本项目采用 [Apache License 2.0](LICENSE) 许可证。
-
----
-
-## 📞 联系我们
-
-- GitHub Issues: [提交问题](https://github.com/mayfly-ai/mayfly/issues)
-- 邮箱: dev@mayfly.io
-
----
-
-**Made with ❤️ by Mayfly Team**
