@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+  <name>mayfly-spring-boot-starter</name>
+  <comment>Spring Boot Starter - 自动配置模块. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <projects>
+    <project>mayfly-core</project>
+    <project>mayfly-router</project>
+    <project>mayfly-loadbalancer</project>
+    <project>mayfly-failover</project>
+    <project>mayfly-circuitbreaker</project>
+    <project>mayfly-adapter</project>
+    <project>mayfly-monitor</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Mayfly示例应用
+  mayfly-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mayfly-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+      - TONGYI_API_KEY=${TONGYI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    volumes:
+      - ./config:/app/config
+    networks:
+      - mayfly-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
+
+  # Prometheus监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mayfly-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - mayfly-network
+    restart: unless-stopped
+
+  # Grafana可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mayfly-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - mayfly-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  mayfly-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
