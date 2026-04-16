@@ -2,6 +2,7 @@ package io.mayfly.autoconfigure;
 
 import io.mayfly.router.RouterRule;
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
  * Mayfly配置属性类
  */
 @Data
+@ConfigurationProperties(prefix = "mayfly")
 public class MayflyProperties {
     
     /** 是否启用Mayfly */

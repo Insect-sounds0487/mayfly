@@ -1,0 +1,85 @@
+mayfly:
+  enabled: true
+  
+  # 模型配置 - 添加多个模型用于测试
+  models:
+    - name: deepseek-primary
+      provider: deepseek
+      api-key: ${DEEPSEEK_API_KEY:sk-5e0c0e0cc3f4495c96d9180b042622cf}
+      model: deepseek-chat
+      weight: 70
+      timeout: 30000
+      max-retries: 2
+      tags:
+        - primary
+        - chinese
+    
+    - name: deepseek-backup
+      provider: deepseek
+      api-key: ${DEEPSEEK_API_KEY:sk-5e0c0e0cc3f4495c96d9180b042622cf}
+      model: deepseek-chat
+      weight: 30
+      timeout: 30000
+      max-retries: 2
+      tags:
+        - backup
+        - chinese
+  
+  # 路由配置
+  router:
+    strategy: weighted  # fixed, weighted, rule-based
+  
+  # 负载均衡配置
+  loadbalancer:
+    strategy: weighted-round-robin  # round-robin, weighted-round-robin
+    health-check:
+      enabled: true
+      interval: 30s
+      timeout: 5s
+      unhealthy-threshold: 3
+  
+  # 故障转移配置
+  failover:
+    enabled: true
+    max-retries: 2
+    cooldown-duration: 60s
+    retryable-exceptions:
+      - java.net.SocketTimeoutException
+      - org.springframework.web.client.HttpServerErrorException
+  
+  # 熔断器配置
+  circuit-breaker:
+    enabled: true
+    failure-rate-threshold: 50
+    wait-duration-in-open-state: 60s
+    sliding-window-size: 10
+    minimum-number-of-calls: 5
+  
+  # 限流器配置
+  rate-limiter:
+    enabled: true
+    limit-refresh-period: 1s
+    limit-for-period: 100
+    timeout-duration: 0s
+  
+  # 监控配置
+  monitor:
+    enabled: true
+
+# Spring Boot 配置
+spring:
+  application:
+    name: mayfly-demo
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:your-openai-api-key}
+
+# 服务器配置
+server:
+  port: 8080
+
+# 日志配置
+logging:
+  level:
+    io.mayfly: DEBUG
+    org.springframework.ai: INFO
