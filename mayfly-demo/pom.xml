@@ -43,6 +43,13 @@
             <version>${spring-ai.version}</version>
         </dependency>
         
+        <!-- Spring AI ZhipuAI (用于智谱AI适配器) -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-zhipuai-spring-boot-starter</artifactId>
+            <version>${spring-ai.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

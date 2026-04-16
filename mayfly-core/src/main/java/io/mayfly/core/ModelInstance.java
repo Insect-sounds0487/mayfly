@@ -61,6 +61,7 @@ public class ModelInstance {
      * 记录请求失败
      */
     public void recordFailure() {
+        totalRequests.incrementAndGet();
         failedRequests.incrementAndGet();
         if (activeRequests.get() > 0) {
             activeRequests.decrementAndGet();
