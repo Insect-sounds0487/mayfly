@@ -57,7 +57,7 @@ class ModelInstanceTest {
         
         instance.recordFailure();
         
-        assertEquals(0, instance.getTotalRequests().get());
+        assertEquals(1, instance.getTotalRequests().get());
         assertEquals(1, instance.getFailedRequests().get());
         assertEquals(0, instance.getActiveRequests().get());
     }

@@ -1,5 +1,6 @@
 package io.mayfly.autoconfigure;
 
+import io.mayfly.adapter.ModelAdapter;
 import io.mayfly.circuitbreaker.CircuitBreakerManager;
 import io.mayfly.core.ModelRegistry;
 import io.mayfly.core.ModelRouter;
@@ -11,11 +12,14 @@ import io.mayfly.router.impl.FixedRouterStrategy;
 import io.mayfly.router.impl.RuleBasedRouterStrategy;
 import io.mayfly.router.impl.WeightedRouterStrategy;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.List;
 
@@ -25,6 +29,7 @@ import java.util.List;
 @Configuration
 @ConditionalOnProperty(prefix = "mayfly", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(MayflyProperties.class)
+@ComponentScan(basePackages = {"io.mayfly.adapter"})
 public class MayflyAutoConfiguration {
     
     private final MayflyProperties properties;
@@ -56,18 +61,21 @@ public class MayflyAutoConfiguration {
     
     @Bean
     @ConditionalOnMissingBean(name = "fixedRouterStrategy")
+    @ConditionalOnProperty(prefix = "mayfly.router", name = "strategy", havingValue = "fixed", matchIfMissing = true)
     public FixedRouterStrategy fixedRouterStrategy() {
         return new FixedRouterStrategy();
     }
     
     @Bean
     @ConditionalOnMissingBean(name = "weightedRouterStrategy")
+    @ConditionalOnProperty(prefix = "mayfly.router", name = "strategy", havingValue = "weighted")
     public WeightedRouterStrategy weightedRouterStrategy() {
         return new WeightedRouterStrategy();
     }
     
     @Bean
     @ConditionalOnMissingBean(name = "ruleBasedRouterStrategy")
+    @ConditionalOnProperty(prefix = "mayfly.router", name = "strategy", havingValue = "rule-based")
     public RuleBasedRouterStrategy ruleBasedRouterStrategy() {
         RuleBasedRouterStrategy strategy = new RuleBasedRouterStrategy();
         if (properties.getRouter() != null && properties.getRouter().getRules() != null) {
@@ -77,7 +85,8 @@ public class MayflyAutoConfiguration {
     }
     
     @Bean
-    @ConditionalOnMissingBean
+    @Primary
+    @ConditionalOnMissingBean(RouterStrategy.class)
     public RouterStrategy routerStrategy(
             ObjectProvider<FixedRouterStrategy> fixedProvider,
             ObjectProvider<WeightedRouterStrategy> weightedProvider,
@@ -86,11 +95,13 @@ public class MayflyAutoConfiguration {
         String strategy = properties.getRouter() != null 
             ? properties.getRouter().getStrategy() : "fixed";
         
-        return switch (strategy) {
+        RouterStrategy result = switch (strategy) {
             case "weighted" -> weightedProvider.getIfAvailable();
             case "rule-based" -> ruleBasedProvider.getIfAvailable();
             default -> fixedProvider.getIfAvailable();
         };
+        
+        return result;
     }
     
     @Bean
@@ -99,7 +110,6 @@ public class MayflyAutoConfiguration {
             CircuitBreakerManager circuitBreakerManager,
             FailoverHandler failoverHandler,
             MetricsCollector metricsCollector,
-            RouterStrategy routerStrategy,
             ObjectProvider<List<io.mayfly.adapter.ModelAdapter>> adaptersProvider) {
         
         List<io.mayfly.adapter.ModelAdapter> adapters = 

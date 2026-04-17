@@ -29,7 +29,11 @@
 	</natures>
 	<filteredResources>
 		<filter>
+<<<<<<< HEAD
 			<id>1776346099631</id>
+=======
+			<id>1776307207653</id>
+>>>>>>> origin/feature/demo-with-deepseek
 			<name></name>
 			<type>30</type>
 			<matcher>
