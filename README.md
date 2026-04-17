@@ -83,6 +83,56 @@ That's it! Mayfly automatically handles routing, load balancing, failover, and a
 
 ---
 
+## 🏗️ Architecture
+
+Mayfly is built on Spring AI as an enterprise-grade enhancement layer:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   Application Layer                      │
+│              (User's Spring Boot App)                   │
+├─────────────────────────────────────────────────────────┤
+│                 Mayfly Enhancement Layer                 │
+│  ┌───────────┬───────────┬───────────┬──────────────┐  │
+│  │  Smart    │   Load    │  Failover │  Circuit     │  │
+│  │  Router   │ Balancing │           │  Breaker     │  │
+│  ├───────────┼───────────┼───────────┼──────────────┤  │
+│  │  Model    │  Health   │  Metrics  │  Config     │  │
+│  │  Registry │  Check    │  Collector│  Manager    │  │
+│  └───────────┴───────────┴───────────┴──────────────┘  │
+├─────────────────────────────────────────────────────────┤
+│                    Spring AI Layer                      │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     │
+│  │  ZhiPu  │  │ Tongyi  │  │DeepSeek │  │ Others │     │
+│  │ Adapter │  │ Adapter │  │ Adapter │  │ Adapter│     │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────┘     │
+├─────────────────────────────────────────────────────────┤
+│                    Model Services                        │
+│    ZhiPu AI      Tongyi Qwen      DeepSeek    ...      │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎯 Why Mayfly?
+
+| Capability | Spring AI | Spring Cloud | Mayfly |
+|------------|-----------|--------------|--------|
+| Basic AI Calls | ✅ | ❌ | ✅ (on Spring AI) |
+| Model Routing | ❌ | ❌ | ✅ |
+| Load Balancing | ❌ | ✅ | ✅ (for AI models) |
+| Circuit Breaking | ❌ | ✅ | ✅ (AI-optimized) |
+| Domestic Models | ⚠️ Limited | ❌ | ✅ Deep Support |
+| Zero-Config | ❌ | ❌ | ✅ |
+
+**Key Differentiators**:
+- 🌟 **First of its Kind**: The first enterprise-grade model governance tool for Spring AI ecosystem
+- 🔄 **Zero-Intrusion**: Built on Spring AI, no code changes required
+- 🇨🇳 **Domestic Focus**: Deep adaptation for Chinese LLM providers (ZhiPu, Tongyi, DeepSeek)
+- 📊 **Complete Observability**: Built-in metrics with Micrometer + Prometheus support
+
+---
+
 ## 📋 Complete Configuration
 
 ```yaml
@@ -179,6 +229,7 @@ mayfly:
 We welcome all forms of contributions! Please check our [Contribution Guide](CONTRIBUTING.md) to learn how to participate in project development.
 
 ### 📄 Documentation
+- [📚 Documentation Index](docs/INDEX.md)
 - [Contribution Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)  
 - [Changelog](CHANGELOG.md)
@@ -186,6 +237,17 @@ We welcome all forms of contributions! Please check our [Contribution Guide](CON
 ### 🐛 Issues & Discussion
 - **Issues**: [Submit issues or feature requests](https://github.com/mayfly-ai/mayfly/issues)
 - **Email**: git@xsjyby.asia
+
+---
+
+## 🗺️ Roadmap
+
+| Phase | Time | Milestone | Goals |
+|-------|------|-----------|-------|
+| **Phase 1** | 2026.4-5 | MVP Enhancement | Support 8+ models, complete documentation |
+| **Phase 2** | 2026.6-7 | Production Ready | Performance optimization, Docker support, 3+ enterprise users |
+| **Phase 3** | 2026.8-10 | Community Growth | 100+ Stars, 500+ users, 5+ paid customers |
+| **Phase 4** | 2026.11-2027.3 | Ecosystem Maturity | 20+ models, 10+ partners, industry standard |
 
 ---
 
