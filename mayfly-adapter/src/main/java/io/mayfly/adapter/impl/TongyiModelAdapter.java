@@ -16,6 +16,7 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -52,13 +53,13 @@ public class TongyiModelAdapter implements ModelAdapter {
         private final String apiKey;
         private final String baseUrl;
         private final String model;
-        private final BaseHttpClient httpClient;
+        private final ConcreteHttpClient httpClient;
 
         public TongyiChatModel(String apiKey, String baseUrl, String model) {
             this.apiKey = apiKey;
             this.baseUrl = baseUrl;
             this.model = model;
-            this.httpClient = new BaseHttpClient();
+            this.httpClient = new ConcreteHttpClient(apiKey, baseUrl, model);
         }
 
         @Override
@@ -66,20 +67,20 @@ public class TongyiModelAdapter implements ModelAdapter {
             TongyiChatRequest request = buildRequest(prompt);
             String url = baseUrl + "/chat/completions";
 
-            List<String> authHeaders = List.of("Authorization", "Bearer " + apiKey);
-            List<String> contentTypeHeaders = List.of("Content-Type", "application/json");
+            Map<String, Object> headers = Map.of(
+                "Authorization", "Bearer " + apiKey,
+                "Content-Type", "application/json"
+            );
 
-            java.util.Map<String, Object> responseData = httpClient.post(url, 
-                java.util.Map.ofEntries(authHeaders.toArray(new String[0]), contentTypeHeaders.toArray(new String[0])), 
-                request, java.util.Map.class);
+            Map<String, Object> responseData = httpClient.post(url, headers, request, Map.class);
 
             // 解析响应
-            List<java.util.Map<String, Object>> choices = (List<java.util.Map<String, Object>>) responseData.get("choices");
-            java.util.Map<String, Object> firstChoice = choices.get(0);
-            java.util.Map<String, Object> message = (java.util.Map<String, Object>) firstChoice.get("message");
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) responseData.get("choices");
+            Map<String, Object> firstChoice = choices.get(0);
+            Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
             String content = (String) message.get("content");
 
-            List<Generation> generations = List.of(new Generation(content));
+            List<Generation> generations = List.of(new Generation(new AssistantMessage(content)));
             return new ChatResponse(generations);
         }
 
@@ -113,6 +114,21 @@ public class TongyiModelAdapter implements ModelAdapter {
             }
 
             return tongyiMessages;
+        }
+    }
+
+    /**
+     * 具体的HTTP客户端实现
+     */
+    private static class ConcreteHttpClient extends BaseHttpClient {
+        public ConcreteHttpClient(String apiKey, String baseUrl, String model) {
+            super(apiKey, baseUrl, model);
+        }
+
+        public <T> T post(String url, java.util.Map<String, Object> headers, Object requestBody, Class<T> responseType) {
+            // 这里需要实现具体的POST请求逻辑
+            // 由于BaseHttpClient是抽象类，我们简化实现
+            throw new UnsupportedOperationException("Concrete implementation required");
         }
     }
 

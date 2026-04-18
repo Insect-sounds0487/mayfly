@@ -6,11 +6,13 @@ import io.mayfly.core.ModelRegistry;
 import io.mayfly.core.ModelRouter;
 import io.mayfly.failover.FailoverHandler;
 import io.mayfly.monitor.MetricsCollector;
+import io.mayfly.monitor.MicrometerMetricsCollector;
 import io.mayfly.monitor.NoOpMetricsCollector;
 import io.mayfly.router.RouterStrategy;
 import io.mayfly.router.impl.FixedRouterStrategy;
 import io.mayfly.router.impl.RuleBasedRouterStrategy;
 import io.mayfly.router.impl.WeightedRouterStrategy;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,9 +54,12 @@ public class MayflyAutoConfiguration {
     
     @Bean
     @ConditionalOnMissingBean
-    public MetricsCollector metricsCollector() {
+    public MetricsCollector metricsCollector(ObjectProvider<MeterRegistry> meterRegistryProvider) {
         if (properties.getMonitor() != null && properties.getMonitor().isEnabled()) {
-            return new NoOpMetricsCollector();
+            MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable();
+            if (meterRegistry != null) {
+                return new MicrometerMetricsCollector(meterRegistry);
+            }
         }
         return new NoOpMetricsCollector();
     }

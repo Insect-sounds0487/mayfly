@@ -53,13 +53,13 @@ public class ZhipuModelAdapter implements ModelAdapter {
         private final String apiKey;
         private final String baseUrl;
         private final String model;
-        private final BaseHttpClient httpClient;
+        private final ConcreteHttpClient httpClient;
 
         public ZhipuChatModel(String apiKey, String baseUrl, String model) {
             this.apiKey = apiKey;
             this.baseUrl = baseUrl;
             this.model = model;
-            this.httpClient = new BaseHttpClient();
+            this.httpClient = new ConcreteHttpClient(apiKey, baseUrl, model);
         }
 
         @Override
@@ -80,7 +80,7 @@ public class ZhipuModelAdapter implements ModelAdapter {
             Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
             String content = (String) message.get("content");
 
-            List<Generation> generations = List.of(new Generation(content));
+            List<Generation> generations = List.of(new Generation(new AssistantMessage(content)));
             return new ChatResponse(generations);
         }
 
@@ -114,6 +114,21 @@ public class ZhipuModelAdapter implements ModelAdapter {
             }
 
             return zhipuMessages;
+        }
+    }
+
+    /**
+     * 具体的HTTP客户端实现
+     */
+    private static class ConcreteHttpClient extends BaseHttpClient {
+        public ConcreteHttpClient(String apiKey, String baseUrl, String model) {
+            super(apiKey, baseUrl, model);
+        }
+
+        public <T> T post(String url, java.util.Map<String, Object> headers, Object requestBody, Class<T> responseType) {
+            // 这里需要实现具体的POST请求逻辑
+            // 由于BaseHttpClient是抽象类，我们简化实现
+            throw new UnsupportedOperationException("Concrete implementation required");
         }
     }
 

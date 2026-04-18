@@ -1,10 +1,35 @@
-# 排除文档目录
+# ============================================================
+# 文档管理 - 只公开用户手册和必要技术文档
+# ============================================================
+
+# 默认排除所有docs目录
 docs/
-# 但保留用户手册
+
+# 公开：用户操作手册
 !docs/user-guide.md
+
+# 公开：必要技术文档
+!docs/technical/api-reference.md
+!docs/technical/deployment-guide.md
+!docs/technical/developer-guide.md
+
+# 私有（不提交）：
+# - docs/project/          项目内部文档（预算、市场分析、PRD等）
+# - docs/code-review/      代码审查报告
+# - docs/test/             测试报告
+# - docs/technical/architecture.md        架构设计
+# - docs/technical/technical-whitepaper.md 技术白皮书
+# - docs/INDEX.md          文档索引
+# - STAGE-REPORT.md        项目阶段性报表
 
 # 本地文档备份（不提交）
 docs-backup/
+
+# 项目内部报表（不提交）
+STAGE-REPORT.md
+
+# 敏感配置文件（包含真实API Key）
+mayfly-demo/src/main/resources/application.yml
 
 # IDE
 .idea/

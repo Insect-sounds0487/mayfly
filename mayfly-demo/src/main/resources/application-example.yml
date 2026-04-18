@@ -1,3 +1,16 @@
+# ============================================================
+# Mayfly Demo Application - Example Configuration
+# ============================================================
+# 使用说明：
+# 1. 复制此文件为 application.yml
+# 2. 将下面的 your-xxx-api-key 替换为你的真实API Key
+# 3. 或者通过环境变量设置（推荐）
+#
+# 环境变量设置方式：
+#   Linux/Mac: export DEEPSEEK_API_KEY=your-key
+#   Windows:   set DEEPSEEK_API_KEY=your-key
+# ============================================================
+
 mayfly:
   enabled: true
   
