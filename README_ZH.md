@@ -174,11 +174,21 @@ mayfly:
 
 ---
 
+## 📚 文档
+
+- [用户手册](https://gitcode.com/Topfogking/mayfly/blob/master/docs/user-guide.md)
+- [API参考](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/api-reference.md)
+- [部署指南](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/deployment-guide.md)
+- [开发手册](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/developer-guide.md)
+- [示例配置](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
+
+---
+
 ## 🤝 开源社区
 
 我们欢迎所有形式的贡献！请查看我们的 [贡献指南](CONTRIBUTING.md) 了解如何参与项目开发。
 
-### 📄 文档
+### 📄 其他文档
 - [贡献指南](CONTRIBUTING.md)
 - [行为准则](CODE_OF_CONDUCT.md)  
 - [版本日志](CHANGELOG.md)
