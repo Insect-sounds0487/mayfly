@@ -228,7 +228,7 @@ mayfly:
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 - [User Guide](https://gitcode.com/Topfogking/mayfly/blob/master/docs/user-guide.md)
 - [API Reference](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/api-reference.md)
