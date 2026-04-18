@@ -237,6 +237,7 @@ We welcome all forms of contributions! Please check our [Contribution Guide](CON
 - [📖 API Reference](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/api-reference.md)
 - [🚀 Deployment Guide](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/deployment-guide.md)
 - [🛠️ Developer Guide](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/developer-guide.md)
+- [⚙️ Example Configuration](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
 - [Contribution Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)  
 - [Changelog](CHANGELOG.md)
