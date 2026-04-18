@@ -2,13 +2,14 @@
 # 文档管理 - 只公开用户手册和必要技术文档
 # ============================================================
 
-# 默认排除所有docs目录
-docs/
+# 默认排除docs目录下所有内容
+docs/*
 
 # 公开：用户操作手册
 !docs/user-guide.md
 
-# 公开：必要技术文档
+# 公开：必要技术文档（需要先排除目录，再包含文件）
+!docs/technical/
 !docs/technical/api-reference.md
 !docs/technical/deployment-guide.md
 !docs/technical/developer-guide.md
