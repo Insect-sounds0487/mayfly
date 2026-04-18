@@ -46,7 +46,7 @@ Mayfly is an enterprise-grade model routing enhancement plugin based on Spring A
 
 Add configuration in `application.yml`:
 
-> 💡 完整示例配置请参考 [application-example.yml](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
+> 💡 For complete example configuration, see [application-example.yml](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
 
 ```yaml
 mayfly:

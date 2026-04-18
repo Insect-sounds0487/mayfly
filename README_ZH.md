@@ -44,6 +44,8 @@ Mayfly是一个基于Spring AI的企业级模型路由增强插件，为国内Ja
 
 在`application.yml`中添加配置：
 
+> 💡 完整示例配置请参考 [application-example.yml](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
+
 ```yaml
 mayfly:
   models:
