@@ -7,12 +7,12 @@
     
     <groupId>io.mayfly</groupId>
     <artifactId>mayfly-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     
     <name>Mayfly Parent</name>
     <description>Enterprise Model Router for Spring AI - 基于Spring AI的企业级模型路由增强插件</description>
-    <url>https://github.com/mayfly-ai/mayfly</url>
+    <url>https://github.com/Insect-sounds0487/mayfly</url>
     
     <modules>
         <module>mayfly-core</module>
@@ -186,8 +186,8 @@
     </developers>
     
     <scm>
-        <connection>scm:git:git://github.com/mayfly-ai/mayfly.git</connection>
-        <developerConnection>scm:git:ssh://github.com/mayfly-ai/mayfly.git</developerConnection>
-        <url>https://github.com/mayfly-ai/mayfly</url>
+        <connection>scm:git:git://github.com/Insect-sounds0487/mayfly.git</connection>
+        <developerConnection>scm:git:ssh://github.com/Insect-sounds0487/mayfly.git</developerConnection>
+        <url>https://github.com/Insect-sounds0487/mayfly</url>
     </scm>
 </project>

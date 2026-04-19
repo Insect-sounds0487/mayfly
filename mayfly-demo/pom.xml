@@ -20,7 +20,7 @@
     
     <properties>
         <java.version>17</java.version>
-        <mayfly.version>1.0.0-SNAPSHOT</mayfly.version>
+        <mayfly.version>1.0.0</mayfly.version>
         <spring-ai.version>1.0.0-M6</spring-ai.version>
     </properties>
     
