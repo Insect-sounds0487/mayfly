@@ -182,6 +182,7 @@ mayfly:
 - [API参考](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/api-reference.md)
 - [部署指南](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/deployment-guide.md)
 - [开发手册](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/developer-guide.md)
+- [压测报告](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/stress-test-report.md)
 - [示例配置](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
 
 ---

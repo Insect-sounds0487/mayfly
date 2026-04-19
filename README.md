@@ -234,6 +234,7 @@ mayfly:
 - [API Reference](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/api-reference.md)
 - [Deployment Guide](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/deployment-guide.md)
 - [Developer Guide](https://gitcode.com/Topfogking/mayfly/blob/master/docs/technical/developer-guide.md)
+- [Stress Test Report](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/stress-test-report.md)
 - [Example Configuration](https://gitcode.com/Topfogking/mayfly/blob/master/mayfly-demo/src/main/resources/application-example.yml)
 
 ---
