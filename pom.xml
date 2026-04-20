@@ -7,12 +7,13 @@
     
     <groupId>io.mayfly</groupId>
     <artifactId>mayfly-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
     
     <name>Mayfly Parent</name>
     <description>Enterprise Model Router for Spring AI - 基于Spring AI的企业级模型路由增强插件</description>
-    <url>https://github.com/Insect-sounds0487/mayfly</url>
+    <url>https://github.com/Insect-sounds048
+    7/mayfly</url>
     
     <modules>
         <module>mayfly-core</module>
@@ -156,8 +157,72 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.2.5</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.14</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.pitest</groupId>
+                    <artifactId>pitest-maven</artifactId>
+                    <version>1.15.2</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.pitest</groupId>
+                            <artifactId>pitest-junit5-plugin</artifactId>
+                            <version>1.2.1</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <targetClasses>
+                            <param>io.mayfly.*</param>
+                        </targetClasses>
+                        <targetTests>
+                            <param>io.mayfly.*</param>
+                        </targetTests>
+                        <excludedMethods>
+                            <param>equals</param>
+                            <param>hashCode</param>
+                            <param>toString</param>
+                            <param>canEqual</param>
+                        </excludedMethods>
+                        <outputFormats>
+                            <param>HTML</param>
+                            <param>XML</param>
+                        </outputFormats>
+                        <mutationThreshold>80</mutationThreshold>
+                        <coverageThreshold>80</coverageThreshold>
+                        <threads>4</threads>
+                        <avoidCallsTo>
+                            <param>java.util.logging</param>
+                            <param>org.slf4j</param>
+                        </avoidCallsTo>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     
     <repositories>

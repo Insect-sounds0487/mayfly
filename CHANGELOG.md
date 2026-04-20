@@ -2,6 +2,53 @@
 
 所有 Mayfly 的显著变更都将记录在此文件中。
 
+## [1.1.0] - 2026-04-20
+
+### 测试质量提升
+- **全面单元测试**: 337 个测试用例，覆盖所有核心模块
+  - mayfly-core: 28 个测试
+  - mayfly-router: 40 个测试
+  - mayfly-loadbalancer: 22 个测试
+  - mayfly-failover: 38 个测试
+  - mayfly-circuitbreaker: 36 个测试
+  - mayfly-monitor: 18 个测试
+  - mayfly-adapter: 109 个测试
+  - mayfly-spring-boot-starter: 46 个测试
+- **JaCoCo 覆盖率**: 75% 指令覆盖率，57% 分支覆盖率
+- **PITest 变异测试**: 89% 变异覆盖率，94% 测试强度
+- **异常场景测试**: 为 router、circuitbreaker、failover 模块添加完整异常测试
+- **边界条件测试**: 覆盖 null 输入、空集合、极端值等边界情况
+
+### 集成测试
+- **WireMock 集成**: 使用 WireMock 模拟真实 HTTP 服务进行集成测试
+- **端到端测试**: 完整的调用链路测试（路由 → 负载均衡 → 适配器 → 响应）
+- **Mock HTTP 测试**: 为 adapter 模块添加 Mock HTTP 调用测试
+
+### 性能测试
+- **基准测试**: 适配器性能基准测试
+  - 简单 prompt: ~3.66 μs/op
+  - 大型 prompt: ~2.32 μs/op
+
+### CI/CD 增强
+- **GitHub Actions 流水线**:
+  - 代码质量检查（编译 + 代码风格）
+  - 单元测试 + JaCoCo 覆盖率报告
+  - 集成测试（WireMock）
+  - 变异测试（PITest）
+  - 性能基准测试
+  - 构建 + Docker 镜像推送
+- **并行执行**: test、integration-test、performance-test、mutation-test 并行运行
+- **测试结果归档**: 所有测试结果自动保存为 artifacts
+
+### 代码改进
+- **可测试性架构**: 创建 HttpClient 接口，支持 Mock 测试
+- **依赖注入优化**: 改进测试依赖注入方式
+- **测试工具类**: 创建通用的测试辅助方法
+
+### 文档更新
+- **测试指南**: 添加测试运行和覆盖率报告生成说明
+- **CI/CD 文档**: 更新持续集成配置说明
+
 ## [1.0.0] - 2026-04-16
 
 ### 新增功能

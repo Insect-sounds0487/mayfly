@@ -1,8 +1,7 @@
 package io.mayfly.adapter.impl;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.mayfly.adapter.ModelAdapter;
-import io.mayfly.adapter.http.BaseHttpClient;
+import io.mayfly.adapter.http.HttpClient;
 import io.mayfly.core.ModelConfig;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -38,7 +37,11 @@ public class ZhipuModelAdapter implements ModelAdapter {
             ? config.getBaseUrl()
             : DEFAULT_BASE_URL;
 
-        return new ZhipuChatModel(config.getApiKey(), baseUrl, model);
+        return new ZhipuChatModel(config.getApiKey(), baseUrl, model, createHttpClient(config.getApiKey(), baseUrl, model));
+    }
+
+    protected HttpClient createHttpClient(String apiKey, String baseUrl, String model) {
+        return new ZhipuHttpClient(apiKey, baseUrl, model);
     }
 
     @Override
@@ -49,17 +52,17 @@ public class ZhipuModelAdapter implements ModelAdapter {
     /**
      * 智谱 AI 聊天模型实现
      */
-    private static class ZhipuChatModel implements ChatModel {
+    static class ZhipuChatModel implements ChatModel {
         private final String apiKey;
         private final String baseUrl;
         private final String model;
-        private final ConcreteHttpClient httpClient;
+        private final HttpClient httpClient;
 
-        public ZhipuChatModel(String apiKey, String baseUrl, String model) {
+        public ZhipuChatModel(String apiKey, String baseUrl, String model, HttpClient httpClient) {
             this.apiKey = apiKey;
             this.baseUrl = baseUrl;
             this.model = model;
-            this.httpClient = new ConcreteHttpClient(apiKey, baseUrl, model);
+            this.httpClient = httpClient;
         }
 
         @Override
@@ -72,9 +75,8 @@ public class ZhipuModelAdapter implements ModelAdapter {
                 "Content-Type", "application/json"
             );
 
-            Map<String, Object> responseData = httpClient.post(url, headers, request, Map.class);
+            Map<String, Object> responseData = (Map<String, Object>) httpClient.post(url, headers, request);
             
-            // 解析响应
             List<Map<String, Object>> choices = (List<Map<String, Object>>) responseData.get("choices");
             Map<String, Object> firstChoice = choices.get(0);
             Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
@@ -118,24 +120,29 @@ public class ZhipuModelAdapter implements ModelAdapter {
     }
 
     /**
-     * 具体的HTTP客户端实现
+     * 智谱 AI HTTP 客户端实现
      */
-    private static class ConcreteHttpClient extends BaseHttpClient {
-        public ConcreteHttpClient(String apiKey, String baseUrl, String model) {
-            super(apiKey, baseUrl, model);
-        }
+    private static class ZhipuHttpClient implements HttpClient {
+            private final String apiKey;
+            private final String baseUrl;
+            private final String model;
 
-        public <T> T post(String url, java.util.Map<String, Object> headers, Object requestBody, Class<T> responseType) {
-            // 这里需要实现具体的POST请求逻辑
-            // 由于BaseHttpClient是抽象类，我们简化实现
-            throw new UnsupportedOperationException("Concrete implementation required");
+            public ZhipuHttpClient(String apiKey, String baseUrl, String model) {
+                this.apiKey = apiKey;
+                this.baseUrl = baseUrl;
+                this.model = model;
+            }
+
+            @Override
+            public Object post(String url, Map<String, Object> headers, Object requestBody) {
+                throw new UnsupportedOperationException("HTTP implementation required");
+            }
         }
-    }
 
     /**
      * 智谱 AI 请求消息格式
      */
-    private static class ZhipuChatMessage {
+    static class ZhipuChatMessage {
         private String role;
         private String content;
 
@@ -148,7 +155,7 @@ public class ZhipuModelAdapter implements ModelAdapter {
     /**
      * 智谱 AI 聊天请求格式
      */
-    private static class ZhipuChatRequest {
+    static class ZhipuChatRequest {
         private String model;
         private List<ZhipuChatMessage> messages;
         private Double temperature;
@@ -165,53 +172,5 @@ public class ZhipuModelAdapter implements ModelAdapter {
         public void setMaxTokens(Integer maxTokens) { this.maxTokens = maxTokens; }
         public Boolean getStream() { return stream; }
         public void setStream(Boolean stream) { this.stream = stream; }
-    }
-
-    /**
-     * 智谱 AI 聊天响应格式
-     */
-    private static class ZhipuChatResponse {
-        private String id;
-        private Long created;
-        private String model;
-        private List<ZhipuChatChoice> choices;
-        private ZhipuUsage usage;
-
-        public String getId() { return id; }
-        public void setId(String id) { this.id = id; }
-        public Long getCreated() { return created; }
-        public void setCreated(Long created) { this.created = created; }
-        public String getModel() { return model; }
-        public void setModel(String model) { this.model = model; }
-        public List<ZhipuChatChoice> getChoices() { return choices; }
-        public void setChoices(List<ZhipuChatChoice> choices) { this.choices = choices; }
-        public ZhipuUsage getUsage() { return usage; }
-        public void setUsage(ZhipuUsage usage) { this.usage = usage; }
-    }
-
-    private static class ZhipuChatChoice {
-        private Integer index;
-        private ZhipuChatMessage message;
-        private String finishReason;
-
-        public Integer getIndex() { return index; }
-        public void setIndex(Integer index) { this.index = index; }
-        public ZhipuChatMessage getMessage() { return message; }
-        public void setMessage(ZhipuChatMessage message) { this.message = message; }
-        public String getFinishReason() { return finishReason; }
-        public void setFinishReason(String finishReason) { this.finishReason = finishReason; }
-    }
-
-    private static class ZhipuUsage {
-        private Integer promptTokens;
-        private Integer completionTokens;
-        private Integer totalTokens;
-
-        public Integer getPromptTokens() { return promptTokens; }
-        public void setPromptTokens(Integer promptTokens) { this.promptTokens = promptTokens; }
-        public Integer getCompletionTokens() { return completionTokens; }
-        public void setCompletionTokens(Integer completionTokens) { this.completionTokens = completionTokens; } 
-        public Integer getTotalTokens() { return totalTokens; }
-        public void setTotalTokens(Integer totalTokens) { this.totalTokens = totalTokens; }
     }
 }
